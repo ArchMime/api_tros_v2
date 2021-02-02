@@ -1,0 +1,9 @@
+{
+    "conection":{
+        "server":"localhost",
+        "user":"root",
+        "password":"",
+        "dbname":"api_tros",
+        "port":"3306"
+    }
+}
