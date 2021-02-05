@@ -1,0 +1,19 @@
+{
+    "name": "mimo/api_v2",
+    "authors": [
+        {
+            "name": "mimo",
+            "email": "archmime@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4":{
+            "app\\":"app"
+        }
+    },
+    "require": {
+        "phpunit/phpunit": "~5.7",
+        "guzzlehttp/guzzle": "~6",
+        "firebase/php-jwt": "^5.2"
+    }
+}
