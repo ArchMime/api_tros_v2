@@ -3,6 +3,9 @@ include_once $_SERVER['DOCUMENT_ROOT']."/api_v2/models/dbConnection.php";
 
 class User{
     
+    /**
+     * params $username
+     */
     public static function getUserForLogin($username)
     {
         $conexion = new DbConnection;

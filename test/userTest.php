@@ -1,11 +1,11 @@
 <?php
+//run test: ./vendor/bin/phpunit
 $_SERVER['DOCUMENT_ROOT'] = '/opt/lampp/htdocs';
 require_once $_SERVER['DOCUMENT_ROOT']."/api_v2/models/user.php";
-//use app\models\User;
 
 class UserModelTest extends \PHPUnit_Framework_TestCase {
     
-    private $urlBase = 'localhost:8080/api_v2/app';
+    private $urlBase = 'localhost:8080/api_v2';
     /**
      * checkponit login
      * metodo post
@@ -20,7 +20,7 @@ class UserModelTest extends \PHPUnit_Framework_TestCase {
      */
     function test_loginCheckpointOk(){
         $client = new GuzzleHttp\Client();
-        $res = $client->request('POST', $this->urlBase.'/login.php', [ 
+        $res = $client->request('POST', $this->urlBase.'/login', [ 
             'form_params' =>[
                 'username'=>'mimo5',
                 'password'=>'passwordtest'
@@ -40,7 +40,7 @@ class UserModelTest extends \PHPUnit_Framework_TestCase {
      */
     function test_loginCheckpointNotOkPassword(){
         $client = new GuzzleHttp\Client();
-        $res = $client->request('POST', $this->urlBase.'/login.php', [ 
+        $res = $client->request('POST', $this->urlBase.'/login', [ 
             'http_errors' => false,
             'form_params' =>[
                 'username'=>'mimo5',
@@ -58,7 +58,7 @@ class UserModelTest extends \PHPUnit_Framework_TestCase {
      */
     function test_loginCheckpointNoData(){
         $client = new GuzzleHttp\Client();
-        $res = $client->request('POST', $this->urlBase.'/login.php', [
+        $res = $client->request('POST', $this->urlBase.'/login', [
             'http_errors' => false, 
             'form_params' =>[]
         ]);
@@ -79,19 +79,12 @@ class UserModelTest extends \PHPUnit_Framework_TestCase {
      * y un mensaje de error en caso de credenciales invalidas.
     */
     /**
-     * 
-    */
-    function test_validateSesionOk(){
+     *      
+     * @depends test_loginCheckpointOk
+     */
+    function test_validateSesionOk($auxData){
         $client = new GuzzleHttp\Client();
-        $auxRes = $client->request('POST', $this->urlBase.'/login.php', [ 
-            'form_params' =>[
-                'username'=>'mimo5',
-                'password'=>'passwordtest'
-            ]
-        ]);
-        $auxData=json_decode($auxRes->getBody(), true);
-
-        $res = $client->request('GET', $this->urlBase.'/login.php', [
+        $res = $client->request('GET', $this->urlBase.'/login', [
             'headers' => [
                 'token'=> $auxData['token'],
                 'id'=> $auxData['id'],
@@ -106,7 +99,7 @@ class UserModelTest extends \PHPUnit_Framework_TestCase {
     function test_validateSesionNoData(){
         $client = new GuzzleHttp\Client();
         
-        $res = $client->request('GET', $this->urlBase.'/login.php', [
+        $res = $client->request('GET', $this->urlBase.'/login', [
             'http_errors' => false, 
             'headers' => [
             ]
@@ -117,17 +110,13 @@ class UserModelTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals('No data', $data['error']);
     }
 
-    function test_validateSesionBadData(){
+    /**
+     *      
+     * @depends test_loginCheckpointOk
+     */
+    function test_validateSesionBadData($auxData){
         $client = new GuzzleHttp\Client();
-        $auxRes = $client->request('POST', $this->urlBase.'/login.php', [ 
-            'form_params' =>[
-                'username'=>'mimo5',
-                'password'=>'passwordtest'
-            ]
-        ]);
-        $auxData=json_decode($auxRes->getBody(), true);
-
-        $res = $client->request('GET', $this->urlBase.'/login.php', [
+        $res = $client->request('GET', $this->urlBase.'/login', [
             'http_errors' => false, 
             'headers' => [
                 'token'=> $auxData['token'],
@@ -141,17 +130,13 @@ class UserModelTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals('Invalid credentials', $data['error']);
     }
 
-    function test_validateSesionExpiredToken(){
+    /**
+     *      
+     * @depends test_loginCheckpointOk
+     */
+    function test_validateSesionExpiredToken($auxData){
         $client = new GuzzleHttp\Client();
-        $auxRes = $client->request('POST', $this->urlBase.'/login.php', [ 
-            'form_params' =>[
-                'username'=>'mimo5',
-                'password'=>'passwordtest'
-            ]
-        ]);
-        $auxData=json_decode($auxRes->getBody(), true);
-
-        $res = $client->request('GET', $this->urlBase.'/login.php', [
+        $res = $client->request('GET', $this->urlBase.'/login', [
             'http_errors' => false, 
             'headers' => [
                 'token'=> 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MTI0MTc1ODIsImV4cCI6MTYxMjQxODQ4MiwiYXVkIjoiOTAxZTk0YjczMWJmNTVjZTE3YTAxMmY4ZmIyN2QyYzkyMWRlNjlhMSIsImRhdGEiOnsidXNlcm5hbWUiOiJtaW1vNSIsImlkIjo1fX0.iQnxBg9TRgkcG8tQu1Y39GtB9kFkd4GSXAB2SyCGg_w',
@@ -164,15 +149,33 @@ class UserModelTest extends \PHPUnit_Framework_TestCase {
         $this->assertArrayHasKey('error', $data);
         $this->assertEquals('Expired token', $data['error']);
     }
+
+    /**
+     * verifica el funcionamiento del chekpoint /users/
+     * metodo get
+     * se espera un nuevo token y una lista de usersname/id de los usuarios
+     * @depends test_loginCheckpointOk
+    */
     /*
-    verifica el funcionamiento del chekpoint /users/
-    function test_getAllUser(){
-         
-         $client = new GuzzleHttp\Client();
-         $res = $client->request()
-         $this->assertEquals($res);
-        }
-        */
+    function test_getAllUserOk($auxData){
+        $client = new GuzzleHttp\Client();
+        $res = $client->request('GET', $this->urlBase.'/users', [
+            'http_errors' => false, 
+            'headers' => [
+                'token'=> $auxData['token'],
+                'id'=> $auxData['id'],
+                'username'=> $auxData['username']
+            ]
+        ]);
+
+        $data=json_decode($res->getBody(), true);
+        $this->assertEquals(200, $res->getStatusCode());
+        $this->assertArrayHasKey('token', $data);
+        $this->assertArrayHasKey('users', $data);
+        $this->assertArrayHasKey('username', $data[0]);
+        $this->assertArrayHasKey('id', $data[0]);
     }
+    */
+}
 
 ?>

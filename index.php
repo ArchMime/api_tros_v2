@@ -1,5 +1,6 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT']."/api_v2/models/user.php";
+require_once $_SERVER['DOCUMENT_ROOT']."/api_v2/utils/router.php";
+include_once $_SERVER['DOCUMENT_ROOT']."/api_v2/utils/headers.php";
 
-echo json_encode(User::getUserByUsername('mimo3'));
-?>
+
+$router = new Router();

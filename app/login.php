@@ -1,24 +1,32 @@
 <?php
-include_once $_SERVER['DOCUMENT_ROOT']."/api_v2/utils/headers.php";
 include_once $_SERVER['DOCUMENT_ROOT']."/api_v2/controllers/login.php";
 
-$headers = getallheaders();
-switch ($_SERVER['REQUEST_METHOD']) {
-    case 'POST':
-        if (isset($_POST['username']) && isset($_POST['password'])) {
-            logIn($_POST);
-        } else {
-            http_response_code(400);
-            echo json_encode(array('error'=>'No data'));
+class loginView{
+
+
+    public static function loginManager($method, $uri, $headersData, $postData){
+
+        switch ($method) {
+            case 'POST':
+                if (isset($postData['username']) && isset($postData['password'])) {
+                    logIn($postData);
+                } else {
+                    http_response_code(400);
+                    echo json_encode(array('error'=>'No data'));
+                }
+            break;
+            case 'GET':
+                if (isset($headersData['username']) && isset($headersData['token']) && isset($headersData['id'])) {
+                    validateSesion($headersData);
+                } else {
+                    http_response_code(400);
+                    echo json_encode(array('error'=>'No data'));
+                }
+            break;
+        
         }
-    break;
-    case 'GET':
-        if (isset($headers['username']) && isset($headers['token']) && isset($headers['id'])) {
-            validateSesion($headers);
-        } else {
-            http_response_code(400);
-            echo json_encode(array('error'=>'No data'));
-        }
-    break;
+    }
+
 }
+
 ?>
