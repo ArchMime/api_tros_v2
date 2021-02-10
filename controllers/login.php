@@ -1,6 +1,6 @@
 <?php
 include_once $_SERVER['DOCUMENT_ROOT']."/api_v2/models/user.php";
-include_once $_SERVER['DOCUMENT_ROOT']."/api_v2/models/authjwt.php";
+include_once $_SERVER['DOCUMENT_ROOT']."/api_v2/utils/authjwt.php";
 
 function logIn($data){
     try {

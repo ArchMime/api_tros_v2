@@ -34,7 +34,6 @@ class UserModelTest extends \PHPUnit_Framework_TestCase {
         
         return $data;
     }
-
     /**
      * verifica el funcionamiento del checkpoint 'login' al ingresar una contraseña incorrecta
      */
@@ -67,8 +66,6 @@ class UserModelTest extends \PHPUnit_Framework_TestCase {
         $this->assertArrayHasKey('error', $data);
         $this->assertEquals('No data', $data['error']);
     }
-
-
     /**
      * Checkpoint login
      * metodo get
@@ -95,7 +92,6 @@ class UserModelTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(200, $res->getStatusCode());
         $this->assertArrayHasKey('token', $data);
     }
-
     function test_validateSesionNoData(){
         $client = new GuzzleHttp\Client();
         
@@ -109,7 +105,6 @@ class UserModelTest extends \PHPUnit_Framework_TestCase {
         $this->assertArrayHasKey('error', $data);
         $this->assertEquals('No data', $data['error']);
     }
-
     /**
      *      
      * @depends test_loginCheckpointOk
@@ -156,7 +151,6 @@ class UserModelTest extends \PHPUnit_Framework_TestCase {
      * se espera un nuevo token y una lista de usersname/id de los usuarios
      * @depends test_loginCheckpointOk
     */
-    /*
     function test_getAllUserOk($auxData){
         $client = new GuzzleHttp\Client();
         $res = $client->request('GET', $this->urlBase.'/users', [
@@ -170,12 +164,118 @@ class UserModelTest extends \PHPUnit_Framework_TestCase {
 
         $data=json_decode($res->getBody(), true);
         $this->assertEquals(200, $res->getStatusCode());
-        $this->assertArrayHasKey('token', $data);
-        $this->assertArrayHasKey('users', $data);
-        $this->assertArrayHasKey('username', $data[0]);
-        $this->assertArrayHasKey('id', $data[0]);
+        $this->assertArrayHasKey('newtoken', $data);
+        $this->assertArrayHasKey('response', $data);
+        $this->assertArrayHasKey('username', $data['response'][0]);
+        $this->assertArrayHasKey('id', $data['response'][0]);
     }
-    */
-}
 
+    /**
+     * metodo get
+     * se espera un nuevo token y un los datos de un usuario especifico
+     * @depends test_loginCheckpointOk
+    */
+    function test_getUserByIdOk($auxData){
+        $client = new GuzzleHttp\Client();
+        $res = $client->request('GET', $this->urlBase.'/users/2', [
+            'http_errors' => false, 
+            'headers' => [
+                'token'=> $auxData['token'],
+                'id'=> $auxData['id'],
+                'username'=> $auxData['username']
+            ]
+        ]);
+
+        $data=json_decode($res->getBody(), true);
+        $this->assertEquals(200, $res->getStatusCode());
+        $this->assertArrayHasKey('newtoken', $data);
+        $this->assertArrayHasKey('response', $data);
+        $this->assertArrayHasKey('username', $data['response']);
+        $this->assertArrayHasKey('id', $data['response']);
+    }
+
+    /**
+     * method post
+     * @depends test_loginCheckpointOk
+     */
+    function test_postNewUser($auxData){
+        $username = "username" . rand(0,255) . "rand" . rand(0,255);
+        $client = new GuzzleHttp\Client();
+        $res = $client->request('POST', $this->urlBase.'/users', [
+            'http_errors' => false, 
+            'headers' => [
+                'token'=> $auxData['token'],
+                'id'=> $auxData['id'],
+                'username'=> $auxData['username']
+            ], 
+            'form_params' =>[
+                'username'=>$username,
+                'password'=>'passwordtest',
+                'email' => $username.'@mail.com',
+                'admin'=>'0'
+            ]
+        ]);
+
+        $data=json_decode($res->getBody(), true);
+        $this->assertEquals(200, $res->getStatusCode());
+        $this->assertArrayHasKey('newtoken', $data);
+        $this->assertArrayHasKey('response', $data);
+        $this->assertArrayHasKey('message', $data['response']);
+        $this->assertEquals('success', $data['response']['message']);
+        $this->assertArrayHasKey('insert', $data['response']);
+        //$this->assertEquals('44', $data['response']['insert']);
+
+        //eliminar los usuarios test para no llenar la bd
+        $client->request('DELETE', $this->urlBase.'/users/'.$data['response']['insert'], [
+            'http_errors' => false, 
+            'headers' => [
+                'token'=> $auxData['token'],
+                'id'=> $auxData['id'],
+                'username'=> $auxData['username']
+            ]
+        ]);
+    }
+
+    /**
+     * delete metohd
+     * @depends test_loginCheckpointOk
+     */
+    function test_deleteUser($auxData){
+        $username = "username" . rand(0,255) . "rand" . rand(0,255);
+        $client = new GuzzleHttp\Client();
+        $auxRes = $client->request('POST', $this->urlBase.'/users', [
+            'http_errors' => false, 
+            'headers' => [
+                'token'=> $auxData['token'],
+                'id'=> $auxData['id'],
+                'username'=> $auxData['username']
+            ], 
+            'form_params' =>[
+                'username'=>$username,
+                'password'=>'passwordtest',
+                'email' => $username.'@mail.com',
+                'admin'=>'0'
+            ]
+        ]);
+
+        $deleteData = json_decode($auxRes->getBody(), true);
+
+        $res = $client->request('DELETE', $this->urlBase.'/users/'.$deleteData['response']['insert'], [
+            'http_errors' => false, 
+            'headers' => [
+                'token'=> $auxData['token'],
+                'id'=> $auxData['id'],
+                'username'=> $auxData['username']
+            ]
+        ]);
+
+        $data=json_decode($res->getBody(), true);
+        $this->assertEquals(200, $res->getStatusCode());
+        $this->assertArrayHasKey('newtoken', $data);
+        $this->assertArrayHasKey('response', $data);
+        $this->assertArrayHasKey('message', $data['response']);
+        $this->assertEquals('success', $data['response']['message']);
+    }
+    
+}
 ?>

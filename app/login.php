@@ -1,7 +1,7 @@
 <?php
 include_once $_SERVER['DOCUMENT_ROOT']."/api_v2/controllers/login.php";
 
-class loginView{
+class LoginView{
 
 
     public static function loginManager($method, $uri, $headersData, $postData){
