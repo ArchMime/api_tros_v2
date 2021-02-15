@@ -17,6 +17,9 @@ function returnOneUsers($credentialData, $id){
     try {
         $token = Authjwt::Check($credentialData['token']);
         $response = User::getUserById($id);
+        if(!$response){
+            $response['message'] = 'user not found'; 
+        }
         http_response_code(200);
         echo json_encode(["newtoken" => $token, "response" => $response]);
     }  catch (Exception $e) {

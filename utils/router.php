@@ -1,6 +1,7 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT']."/api_v2/app/login.php";
 require_once $_SERVER['DOCUMENT_ROOT']."/api_v2/app/users.php";
+require_once $_SERVER['DOCUMENT_ROOT']."/api_v2/app/services.php";
 
 class Router{
     private $method;
@@ -30,6 +31,9 @@ class Router{
             
             case 'users':
                 UsersView::usersManager($this->method, $this->uri, $this->headersData, $this->postData);
+                break;
+            case 'services':
+                ServicesView::servicesManager($this->method, $this->uri, $this->headersData, $this->postData);
                 break;
             default:
                 http_response_code(404);

@@ -1,9 +1,8 @@
 <?php
 //run test: ./vendor/bin/phpunit
 $_SERVER['DOCUMENT_ROOT'] = '/opt/lampp/htdocs';
-require_once $_SERVER['DOCUMENT_ROOT']."/api_v2/models/user.php";
 
-class UserModelTest extends \PHPUnit_Framework_TestCase {
+class UserTest extends \PHPUnit_Framework_TestCase {
     
     private $urlBase = 'localhost:8080/api_v2';
     /**
