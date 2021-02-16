@@ -45,4 +45,65 @@ class servicesTest extends \PHPUnit_Framework_TestCase {
         $this->assertArrayHasKey('id', $data['response'][0]);
         $this->assertArrayHasKey('subServices', $data['response'][0]);
     }
+
+    function test_getAllSubservicesOfServiceOk(){
+        $client = new GuzzleHttp\Client();
+        $res = $client->request('GET', $this->urlBase.'/services/1/subservices', [
+            'http_errors' => false
+        ]);
+
+        $data=json_decode($res->getBody(), true);
+        $this->assertEquals(200, $res->getStatusCode());
+        $this->assertArrayHasKey('response', $data);
+        $this->assertArrayHasKey('name', $data['response'][0]);
+        $this->assertArrayHasKey('id', $data['response'][0]);
+        $this->assertArrayHasKey('service', $data['response'][0]);
+    }
+
+    function test_getSubservicesOfServiceByIdOk(){
+        $client = new GuzzleHttp\Client();
+        $res = $client->request('GET', $this->urlBase.'/services/1/subservices/1', [
+            'http_errors' => false
+        ]);
+
+        $data=json_decode($res->getBody(), true);
+        $this->assertEquals(200, $res->getStatusCode());
+        $this->assertArrayHasKey('response', $data);
+        $this->assertArrayHasKey('name', $data['response'][0]);
+        $this->assertArrayHasKey('id', $data['response'][0]);
+        $this->assertArrayHasKey('service', $data['response'][0]);
+    }
+
+    function test_postNewServiceOk(){
+        $client = new GuzzleHttp\Client();
+
+        $loginRes = $client->request('POST', $this->urlBase.'/login', [ 
+            'form_params' =>[
+                'username'=>'mimo5',
+                'password'=>'passwordtest'
+            ]
+        ]);
+        $loginData=json_decode($loginRes->getBody(), true);
+
+        $res = $client->request('POST', $this->urlBase.'/services', [
+            'http_errors' => false,
+            'headers' => [
+                'token'=> $loginData['token'],
+                'id'=> $loginData['id'],
+                'username'=> $loginData['username']
+            ],
+            'form_params' =>[
+                'name'=>'new services test 3sdfdfsdas231sfss',
+                'description'=>'description test',
+                'value' => '123'
+            ]
+        ]);
+
+        $data=json_decode($res->getBody(), true);
+        $this->assertEquals(200, $res->getStatusCode());
+        $this->assertArrayHasKey('response', $data);
+        $this->assertArrayHasKey('message', $data['response']);
+        $this->assertEquals('success', $data['response']['message']);
+        $this->assertArrayHasKey('insert', $data['response']);
+    }
 }

@@ -48,5 +48,21 @@ class Services
             return $servicesArray;
         }
     }
+
+    public static function createNewService($data)
+    {
+        $conexion = new DbConnection;
+        $conn = $conexion->get_connection();
+        $stm = "INSERT INTO `services`(`id`, `name`, `description`, `value`) VALUES (null, ?,?,?)";
+        $result = mysqli_prepare($conn, $stm);
+        $validate = mysqli_stmt_bind_param($result, 'ssi', $data['name'],  $data['description'], $data['value']);
+        $validate = mysqli_stmt_execute($result);
+        if ($validate) {
+            return array("message" => "success", "insert"=>mysqli_insert_id($conn));
+        } else {
+            $arr = array("resp" => "error", "error" => mysqli_error($conn));
+            return $arr;
+        }
+    }
 }
 ?>

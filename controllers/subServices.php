@@ -12,3 +12,14 @@ function returnSubServicesByServiceId($id){
         echo json_encode($auxArr);
     }
 }
+
+function returnSubServiceById($id){
+    try {
+        $response = SubServices::getSubServiceById($id);
+        http_response_code(200);
+        echo json_encode(["response" => $response]);
+    }  catch (Exception $e) {
+        $auxArr = array('error' => $e->getMessage());
+        echo json_encode($auxArr);
+    }
+}

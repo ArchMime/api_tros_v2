@@ -7,7 +7,12 @@ class SubServicesView{
     public static function servicesManager($method, $uri, $headersData, $postData){
         switch ($method) {
             case 'GET':
-                if (count($uri)==2) {
+                if (count($uri)==4 && $uri[3]=='subservices') {
+                    http_response_code(200);
+                    echo json_encode(["response" =>returnSubServicesByServiceId($uri[2])]);
+                } elseif (count($uri)==5 && $uri[3]=='subservices') {
+                    http_response_code(200);
+                    returnSubServiceById($uri[4]);
                 } else {
                     http_response_code(404);
                     echo json_encode(array('error'=>'No found'));
