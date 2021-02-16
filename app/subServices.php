@@ -18,7 +18,9 @@ class SubServicesView{
                     echo json_encode(array('error'=>'No found'));
                 }
                 break;
-            
+            case 'DELETE':
+                echo 'en delete subservice';
+                break;
             default:
                 # code...
                 break;

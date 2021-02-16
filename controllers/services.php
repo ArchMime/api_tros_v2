@@ -50,3 +50,15 @@ function addNewService($credentialData, $postData){
         echo json_encode($auxArr);
     }
 }
+
+function removeService($credentialData, $id){
+    try {
+        $token = Authjwt::Check($credentialData['token']);
+        $response = Services::deleteService($id);
+        http_response_code(200);
+        echo json_encode(["newtoken" => $token, "response" => $response]);
+    }  catch (Exception $e) {
+        $auxArr = array('error' => $e->getMessage());
+        echo json_encode($auxArr);
+    }
+}

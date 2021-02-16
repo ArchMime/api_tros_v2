@@ -93,7 +93,7 @@ class servicesTest extends \PHPUnit_Framework_TestCase {
                 'username'=> $loginData['username']
             ],
             'form_params' =>[
-                'name'=>'new services test 3sdfdfsdas231sfss',
+                'name'=>'new servicesTest',
                 'description'=>'description test',
                 'value' => '123'
             ]
@@ -105,5 +105,59 @@ class servicesTest extends \PHPUnit_Framework_TestCase {
         $this->assertArrayHasKey('message', $data['response']);
         $this->assertEquals('success', $data['response']['message']);
         $this->assertArrayHasKey('insert', $data['response']);
+
+        $res = $client->request('DELETE', $this->urlBase.'/services/'.$data['response']['insert'], [
+            'http_errors' => false,
+            'headers' => [
+                'token'=> $loginData['token'],
+                'id'=> $loginData['id'],
+                'username'=> $loginData['username']
+            ]
+        ]);
+    }
+
+    function test_deleteServiceOk(){
+        $client = new GuzzleHttp\Client();
+
+        $loginRes = $client->request('POST', $this->urlBase.'/login', [ 
+            'form_params' =>[
+                'username'=>'mimo5',
+                'password'=>'passwordtest'
+            ]
+        ]);
+        $loginData=json_decode($loginRes->getBody(), true);
+
+        $serviceData = $client->request('POST', $this->urlBase.'/services', [
+            'http_errors' => false,
+            'headers' => [
+                'token'=> $loginData['token'],
+                'id'=> $loginData['id'],
+                'username'=> $loginData['username']
+            ],
+            'form_params' =>[
+                'name'=>'delete services test',
+                'description'=>'description test',
+                'value' => '123'
+            ]
+        ]);
+
+
+        $auxData=json_decode($serviceData->getBody(), true);
+
+        $res = $client->request('DELETE', $this->urlBase.'/services/'.$auxData['response']['insert'], [
+            'http_errors' => false,
+            'headers' => [
+                'token'=> $loginData['token'],
+                'id'=> $loginData['id'],
+                'username'=> $loginData['username']
+            ]
+        ]);
+
+        $data=json_decode($res->getBody(), true);
+        $this->assertEquals(200, $res->getStatusCode());
+        $this->assertArrayHasKey('newtoken', $data);
+        $this->assertArrayHasKey('response', $data);
+        $this->assertArrayHasKey('message', $data['response']);
+        $this->assertEquals('success', $data['response']['message']);
     }
 }

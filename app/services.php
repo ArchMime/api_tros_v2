@@ -26,6 +26,16 @@ class ServicesView{
                     echo json_encode(array('error'=>'No found'));
                 }
                 break;
+            case 'DELETE':
+                if (count($uri)==3) {
+                    removeService($headersData, $uri[2]);
+                }  elseif(count($uri)>=4 && $uri[3]=='subservices'){
+                    SubServicesView::servicesManager($method, $uri, $headersData, $postData);
+                } else {
+                    http_response_code(404);
+                    echo json_encode(array('error'=>'No found'));
+                }
+                break;
             default:
                 # code...
                 break;

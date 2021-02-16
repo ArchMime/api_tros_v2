@@ -60,9 +60,27 @@ class Services
         if ($validate) {
             return array("message" => "success", "insert"=>mysqli_insert_id($conn));
         } else {
-            $arr = array("resp" => "error", "error" => mysqli_error($conn));
+            $arr = array("message" => "error", "error" => mysqli_error($conn));
             return $arr;
         }
     }
+
+    public static function deleteService($id)
+    {
+        $conexion = new DbConnection;
+        $conn = $conexion->get_connection();
+        $stm = "DELETE FROM `services` WHERE `id` = ?";
+        $result = mysqli_prepare($conn, $stm);
+        $validate = mysqli_stmt_bind_param($result, 'i', $id);
+        $validate = mysqli_stmt_execute($result);
+        if ($validate) {
+            $arr = array("message" => "success");
+            return $arr;
+        } else {
+            $arr = array("message" => "error", "error" => mysqli_error($conn));
+            return $arr;
+        }
+    }
+
 }
 ?>
