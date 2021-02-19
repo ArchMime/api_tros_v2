@@ -21,6 +21,8 @@ class ServicesView{
             case 'POST':
                 if (count($uri)==2) {
                     addNewService($headersData, $postData);
+                }  elseif(count($uri)>=4 && $uri[3]=='subservices'){
+                    SubServicesView::servicesManager($method, $uri, $headersData, $postData);
                 } else {
                     http_response_code(404);
                     echo json_encode(array('error'=>'No found'));

@@ -51,5 +51,40 @@ class SubServices
             return $servicesArray;
         }
     }
+
+    public static function createNewSubService($data, $service)
+    {
+        $conexion = new DbConnection;
+        $conn = $conexion->get_connection();
+        $stm = "INSERT INTO `subservices`(`id`,`service`, `name`, `description`, `value`) VALUES (null, ?,?,?,?)";
+        $result = mysqli_prepare($conn, $stm);
+        $validate = mysqli_stmt_bind_param($result, 'issi', $service, $data['name'],  $data['description'], $data['value']);
+        $validate = mysqli_stmt_execute($result);
+        if ($validate) {
+            $arr = array("message" => "success", "insert"=>mysqli_insert_id($conn));
+            return $arr;
+        } else {
+            $arr = array("message" => "error", "error" => mysqli_error($conn));
+            return $arr;
+        }
+    }
+
+    public static function deleteSubService($id)
+    {
+        $conexion = new DbConnection;
+        $conn = $conexion->get_connection();
+        $stm = "DELETE FROM `subservices` WHERE `id` = ?";
+        $result = mysqli_prepare($conn, $stm);
+        $validate = mysqli_stmt_bind_param($result, 'i', $id);
+        $validate = mysqli_stmt_execute($result);
+        if ($validate) {
+            $arr = array("message" => "success");
+            return $arr;
+        } else {
+            $arr = array("message" => "error", "error" => mysqli_error($conn));
+            return $arr;
+        }
+    }
+
 }
 ?>

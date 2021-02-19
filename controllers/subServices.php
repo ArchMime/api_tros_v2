@@ -8,8 +8,7 @@ function returnSubServicesByServiceId($id){
         http_response_code(200);
         return  $response;
     }  catch (Exception $e) {
-        $auxArr = array('error' => $e->getMessage());
-        echo json_encode($auxArr);
+        echo json_encode(array('error' => $e->getMessage()));
     }
 }
 
@@ -19,7 +18,29 @@ function returnSubServiceById($id){
         http_response_code(200);
         echo json_encode(["response" => $response]);
     }  catch (Exception $e) {
-        $auxArr = array('error' => $e->getMessage());
-        echo json_encode($auxArr);
+        echo json_encode(array('error' => $e->getMessage()));
     }
 }
+
+function addNewSubService($credentialData, $postData, $serviceId){
+    try {
+        $token = Authjwt::Check($credentialData['token']);
+        $response = SubServices::createNewSubService($postData, $serviceId);
+        http_response_code(200);
+        echo json_encode(["newtoken" => $token, "response" => $response]);
+    }  catch (Exception $e) {
+        echo json_encode(array('error' => $e->getMessage()));
+    }
+}
+
+function removeSubService($credentialData, $serviceId){
+    try {
+        $token = Authjwt::Check($credentialData['token']);
+        $response = SubServices::deleteSubService($serviceId);
+        http_response_code(200);
+        echo json_encode(["newtoken" => $token, "response" => $response]);
+    }  catch (Exception $e) {
+        echo json_encode(array('error' => $e->getMessage()));
+    }
+}
+

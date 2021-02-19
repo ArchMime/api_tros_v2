@@ -18,8 +18,23 @@ class SubServicesView{
                     echo json_encode(array('error'=>'No found'));
                 }
                 break;
+            case 'POST':
+                if (count($uri)==4 && $uri[3]=='subservices') {
+                    http_response_code(200);
+                    addNewSubService($headersData, $postData, $uri[2]);
+                } else {
+                    http_response_code(404);
+                    echo json_encode(array('error'=>'No found'));
+                }
+                break;
             case 'DELETE':
-                echo 'en delete subservice';
+                if (count($uri)==5 && $uri[3]=='subservices') {
+                    http_response_code(200);
+                    removeSubService($headersData, $uri[4]);
+                } else {
+                    http_response_code(404);
+                    echo json_encode(array('error'=>'No found'));
+                }
                 break;
             default:
                 # code...
